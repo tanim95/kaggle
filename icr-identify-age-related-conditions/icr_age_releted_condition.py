@@ -19,37 +19,62 @@ df.isnull().sum()
 
 df_copy = df.copy()
 
-df_copy['EJ'].unique()
-
 df_copy = df_copy.dropna(subset=['BQ', 'EL'])
 
-dummy = pd.get_dummies(df_copy['EJ'], prefix='EJ', drop_first=True)
-df_copy = pd.concat([df_copy.drop('EJ', axis=True), dummy], axis=1)
+dummy = pd.get_dummies(df_copy['EJ'],prefix='EJ',drop_first=True)
+df_copy = pd.concat([df_copy.drop('EJ',axis = True),dummy],axis=1)
 
 sns.heatmap(df_copy.isnull())
+
+X  = df_copy.drop('Class',axis = 1)
+y = df_copy['Class']
 
 greek = pd.read_csv('/content/greeks.csv')
 greek
 
 greek['Epsilon'].value_counts()['Unknown']
 
-greek.drop('Epsilon', axis=1, inplace=True)
+greek.drop('Epsilon',axis = 1,inplace  = True)
 
 greek.columns
 
-columns = ['Alpha', 'Beta', 'Gamma', 'Delta']
+columns = ['Alpha','Beta','Gamma','Delta']
 
 new_greek = greek.copy()
 for i in columns:
-    dummy = pd.get_dummies(greek[i], prefix=i, drop_first=True)
-    new_greek = pd.concat([new_greek.drop(i, axis=1), dummy], axis=1)
+  dummy = pd.get_dummies(greek[i],prefix=i, drop_first=True)
+  new_greek = pd.concat([new_greek.drop(i,axis = 1),dummy],axis = 1)
 
 new_greek
 
-merged_df = pd.merge(df_copy, new_greek, on='Id')
+merged_df = pd.merge(X,new_greek,on = 'Id')
 merged_df
 
 merged_df.isnull().sum()
 
-final_df = merged_df.drop('Id', axis=1)
+id = merged_df['Id']
+
+new_df = merged_df.drop('Id',axis = 1)
+new_df
+
+features = ['AB', 'AF', 'AH', 'AM', 'AR', 'AX', 'AY', 'AZ', 'BC', 'BD ', 'BN', 'BP',
+       'BQ', 'BR', 'BZ', 'CB', 'CC', 'CD ', 'CF', 'CH', 'CL', 'CR', 'CS', 'CU',
+       'CW ', 'DA', 'DE', 'DF', 'DH', 'DI', 'DL', 'DN', 'DU', 'DV', 'DY', 'EB',
+       'EE', 'EG', 'EH', 'EL', 'EP', 'EU', 'FC', 'FD ', 'FE', 'FI', 'FL', 'FR',
+       'FS', 'GB', 'GE', 'GF', 'GH', 'GI', 'GL']
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+new_df = scaler.fit_transform(new_df[features])
+
+scaled_df = pd.DataFrame(new_df,columns = features)
+scaled_df
+
+final_df = pd.concat([id,scaled_df], axis=1)
+final_df
+
+final_df = pd.merge(final_df,new_greek,on = 'Id')
+final_df
+
+final_df = final_df.drop('Id',axis = 1)
 final_df
