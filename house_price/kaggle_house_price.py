@@ -16,7 +16,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-df = pd.read_csv('/content/train.csv')
+df = pd.read_csv('./house_price/kaggle_house_price.py')
 df
 
 df.isnull().sum().to_frame()
